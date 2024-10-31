@@ -9,6 +9,14 @@
     <h1>Bluetooth動作テスト</h1>
     <button id="connect">接続する</button>
     <button id="sendData">Clear</button>
+    <button id="sendData">Clear</button>
+    <button id="sendR1">R1</button>
+    <button id="sendR2">R2</button>
+    <button id="sendR3">R3</button>
+    <button id="sendL1">L1</button>
+    <button id="sendL2">L2</button>
+    <button id="sendL3">L3</button>
+    <button id="sendBK">BK</button>
     <canvas id="$img" width="100" height="100"></canvas>
     <div style="top: 520px;position: absolute">
         <hr id="$left" width="100px" style="margin-left: 1330px;rotate: -70deg;transform-origin: left top;" size="5" color="black">
@@ -101,6 +109,34 @@
         dire = "L";
         $right.color = "black";
         this.color = "blue";
+    });
+    document.getElementById('sendR1').addEventListener('click', async () => {
+                const data = new TextEncoder().encode("R1");
+                await characteristic.writeValue(data);
+    });
+    document.getElementById('sendR2').addEventListener('click', async () => {
+                const data = new TextEncoder().encode("R2");
+                await characteristic.writeValue(data);
+    });
+    document.getElementById('sendR3').addEventListener('click', async () => {
+                const data = new TextEncoder().encode("R3");
+                await characteristic.writeValue(data);
+    });
+    document.getElementById('sendL1').addEventListener('click', async () => {
+                const data = new TextEncoder().encode("L1");
+                await characteristic.writeValue(data);
+    });
+    document.getElementById('sendL2').addEventListener('click', async () => {
+                const data = new TextEncoder().encode("L2");
+                await characteristic.writeValue(data);
+    });
+    document.getElementById('sendL3').addEventListener('click', async () => {
+                const data = new TextEncoder().encode("L3");
+                await characteristic.writeValue(data);
+    });
+    document.getElementById('sendBK').addEventListener('click', async () => {
+                const data = new TextEncoder().encode("BK");
+                await characteristic.writeValue(data);
     });
     </script>
 </body>
