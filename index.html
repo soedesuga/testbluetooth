@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluetooth動作テスト</title>
+</head>
+<body>
+    <h1>Bluetooth動作テスト</h1>
+    <button id="connect">接続する</button>
+    <button id="sendData">Clear</button>
+    <canvas id="$img" width="100" height="100"></canvas>
+    <div style="top: 520px;position: absolute">
+        <hr id="$left" width="100px" style="margin-left: 1330px;rotate: -70deg;transform-origin: left top;" size="5" color="black">
+        <hr id="$right" width="100px" style="margin-top: -10px; margin-left: 1330px;rotate: 70deg;transform-origin: left top;" size="5" color="black">
+        <hr width="100%" style="margin-top: -15px;" size="5" color="black">
+        <a style="margin-left: 150px">50m</a>
+        <a style="margin-left: 350px">10m</a>
+        <a style="margin-left: 250px">5m</a>
+        <a style="margin-left: 200px">1m</a>
+        <a style="margin-left: 150px">曲がり角</a>
+    </div>
+    <script>
+    $img.style.top = "400px";
+    $img.style.left = "50px";
+    $img.style.borderRadius = "50%";
+    $img.style.position = 'fixed';
+    $img.style.backgroundColor = 'red';
+    let dire = "L";
+    $left.color = "blue";
+    async function sendPos(direction, distance,characteristic){
+            console.log(distance);
+            if (characteristic) {
+                let disCode;
+                if (distance <= 130){
+                    disCode = "0";
+                }else if (distance > 130 && distance <= 520){
+                    disCode = "1";
+                }else if (distance > 520 && distance <= 805){
+                    disCode = "2";
+                }else if (distance > 805 && distance <= 1040){
+                    disCode = "3";
+                }else if (distance > 1040 && distance <= 1240){
+                    disCode = "4";
+                }else if (distance > 1240){
+                    disCode = "0";
+                }
+                let msg = direction + disCode;
+                if (disCode == "4"){
+                    msg = "BK";
+                }
+                const data = new TextEncoder().encode(msg);
+                await characteristic.writeValue(data);
+                console.log(msg + 'sent to ESP32');
+            } else {
+                console.log('Not connected');
+            }
+    }
+        let bleDevice;
+        let characteristic;
+
+        document.getElementById('connect').addEventListener('click', async () => {
+            try {
+                bleDevice = await navigator.bluetooth.requestDevice({
+    acceptAllDevices: true,
+    optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
+});
+
+
+                const server = await bleDevice.gatt.connect();
+                const service = await server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb');
+                characteristic = await service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb');
+                console.log('Connected to ESP32');
+            } catch (error) {
+                console.log('Error: ' + error);
+            }
+        });
+
+    $img.onpointermove = function(event){
+    if(event.buttons){
+        this.style.left     = this.offsetLeft + event.movementX + 'px'
+        this.draggable      = false
+        sendPos(dire,$img.offsetLeft,characteristic);
+    }
+    }
+    document.addEventListener('keydown', event => {
+        console.log(event.code);
+        if (event.code === "ArrowLeft") {
+            $img.style.left = ($img.offsetLeft - 5) + 'px'
+            sendPos(dire,$img.offsetLeft,characteristic);
+        }else if(event.code === "ArrowRight"){
+            $img.style.left = ($img.offsetLeft + 5) + 'px'
+            sendPos(dire,$img.offsetLeft,characteristic);
+        };
+    });
+    $right.addEventListener('click',function(){
+        dire = "R";
+        $left.color = "black";
+        this.color = "blue";
+    });
+    $left.addEventListener('click',function(){
+        dire = "L";
+        $right.color = "black";
+        this.color = "blue";
+    });
+    </script>
+</body>
+</html>
