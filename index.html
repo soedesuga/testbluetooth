@@ -9,7 +9,6 @@
     <h1>Bluetooth動作テスト</h1>
     <button id="connect">接続する</button>
     <button id="sendData">Clear</button>
-    <button id="sendData">Clear</button>
     <button id="sendR1">R1</button>
     <button id="sendR2">R2</button>
     <button id="sendR3">R3</button>
@@ -70,6 +69,7 @@
         document.getElementById('connect').addEventListener('click', async () => {
             try {
                 bleDevice = await navigator.bluetooth.requestDevice({
+    acceptAllDevices: true,
     optionalServices: ['0000ffe0-0000-1000-8000-00805f9b34fb']
 });
 
